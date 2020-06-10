@@ -1,2 +1,8 @@
+// Bulma
+@import "node_modules/bulma/bulma";
 // Variables
 @import "variables";
+
+body {
+    padding-top: 5vh;
+}
