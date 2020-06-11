@@ -1,5 +1,5 @@
 <template>
-  <nav class="navbar" role="navigation" aria-label="main navigation">
+  <nav class="navbar pb-4" role="navigation" aria-label="main navigation">
     <div class="navbar-brand">
       <a class="navbar-item" href="/home">LaraVue-Todo</a>
 
@@ -49,7 +49,7 @@ export default {
   },
 
   mounted() {
-    console.log("navbar component mounted.");
+    //console.log("navbar component mounted.");
   }
 };
 </script>
