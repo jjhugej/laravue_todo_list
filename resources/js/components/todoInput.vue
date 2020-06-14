@@ -25,7 +25,11 @@ export default {
     return {
       title: "",
       description: "",
-      info: "",
+      storedItem: {
+        id: null,
+        title: null,
+        description: null
+      },
       errors: "",
       csrf: document
         .querySelector('meta[name="csrf-token"]')
@@ -36,19 +40,15 @@ export default {
     addNewTodoItem() {
       axios
         .post("/todoitem", { title: this.title, description: this.description })
-        .then(
-          response => (this.info = response),
-
-          this.$emit("todoItemAdded"),
+        .then(response => {
           (this.title = ""),
-          (this.description = "")
-        )
+            (this.description = ""),
+            EventBus.$emit("todoItemAdded", response.data.storedItem);
+        })
         .catch(function(error) {
-          alert("something went wrong");
+          console.log("something went wrong with todo input");
           this.errors = error;
         });
-
-      console.log("todo item submitted");
     }
   },
 

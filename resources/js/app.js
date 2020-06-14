@@ -1,5 +1,8 @@
 require("./bootstrap");
+
 window.Vue = require("vue");
+window.EventBus = new Vue({});
+
 const files = require.context("./", true, /\.vue$/i);
 files.keys().map(key =>
     Vue.component(

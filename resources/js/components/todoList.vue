@@ -1,9 +1,10 @@
 <template>
   <div class="container">
     <todoItem
-      v-on:todoItemAdded="refreshTodoList"
       v-for="todoitem in data"
+      v-on:deleteIt="deleteThis"
       :key="todoitem.id"
+      :id="todoitem.id"
       :title="todoitem.title"
       :description="todoitem.description"
     ></todoItem>
@@ -18,27 +19,37 @@ export default {
     };
   },
   methods: {
-    refreshTodoList() {
-      console.log("refreshtodo called");
-      axios
-        .get("/todoitems")
-        .then(
-          response => (this.data = response.data),
-          console.log("refreshtodolist called")
-        )
-        .catch(console.log("something went wrong while refreshing todo items"));
+    deleteThis: function(id) {
+      axios({
+        method: "delete",
+        url: "/todoitems/" + id
+      })
+        .then(response => {
+          this.data = this.data.filter(item => item.id != id);
+        })
+        .catch(function(error) {
+          console.log("something went wrong with initial fetch", error);
+        });
     }
   },
 
   mounted() {
-    //console.log("todo-list component mounted.");
     axios
       .get("/todoitems")
-      .then(
-        response => (this.data = response.data),
-        console.log("successfully fetched todo item datas")
-      )
-      .catch(console.log("something went wrong while fetching todo items"));
+      .then(response => {
+        this.data = response.data;
+      })
+      .catch(function(error) {
+        console.log("something went wrong with initial fetch", error);
+      });
+  },
+  created() {
+    EventBus.$on("todoItemAdded", payload => {
+      this.data.unshift(payload);
+    });
+    this.$on("deleteIt", function() {
+      console.log("delete received");
+    });
   }
 };
 </script>

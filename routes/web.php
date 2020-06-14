@@ -23,4 +23,5 @@ Route::get('/home', 'HomeController@index')->name('home');
 
 Route::get('/todoitems', 'TodoItemController@index');
 Route::post('/todoitem', 'TodoItemController@store');
+Route::delete('/todoitems/{id}', 'TodoItemController@destroy');
 

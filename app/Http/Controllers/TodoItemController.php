@@ -44,7 +44,7 @@ class TodoItemController extends Controller
 
         $todoItem = TodoItem::create($request->all());
         
-        return ['success' => true, 'message' => 'todo item created'];
+        return ['success' => true, 'message' => 'todo item created','storedItem' => $todoItem];
     }
 
     /**
@@ -87,8 +87,10 @@ class TodoItemController extends Controller
      * @param  \App\TodoItem  $todoItem
      * @return \Illuminate\Http\Response
      */
-    public function destroy(TodoItem $todoItem)
+    public function destroy($id)
     {
-        //
+        $todoItem = TodoItem::where('id', $id);
+        $todoItem->delete();
+        return ['success' => true, 'message' => 'todo item deleted'];
     }
 }

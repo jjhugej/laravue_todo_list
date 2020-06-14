@@ -2124,7 +2124,11 @@ __webpack_require__.r(__webpack_exports__);
     return {
       title: "",
       description: "",
-      info: "",
+      storedItem: {
+        id: null,
+        title: null,
+        description: null
+      },
       errors: "",
       csrf: document.querySelector('meta[name="csrf-token"]').getAttribute("content")
     };
@@ -2137,12 +2141,11 @@ __webpack_require__.r(__webpack_exports__);
         title: this.title,
         description: this.description
       }).then(function (response) {
-        return _this.info = response;
-      }, this.$emit("todoItemAdded"), this.title = "", this.description = "")["catch"](function (error) {
-        alert("something went wrong");
+        _this.title = "", _this.description = "", EventBus.$emit("todoItemAdded", response.data.storedItem);
+      })["catch"](function (error) {
+        console.log("something went wrong with todo input");
         this.errors = error;
       });
-      console.log("todo item submitted");
     }
   },
   mounted: function mounted() {//console.log("todo-input component mounted.");
@@ -2174,10 +2177,14 @@ __webpack_require__.r(__webpack_exports__);
   data: function data() {
     return {};
   },
-  props: ["title", "description"],
-  methods: {},
-  mounted: function mounted() {//console.log("todo-list component mounted.");
-  }
+  props: ["id", "title", "description"],
+  methods: {
+    deleteIt: function deleteIt(id) {
+      //console.log(id);
+      this.$emit("deleteIt", id);
+    }
+  },
+  mounted: function mounted() {}
 });
 
 /***/ }),
@@ -2203,6 +2210,7 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
     return {
@@ -2210,22 +2218,39 @@ __webpack_require__.r(__webpack_exports__);
     };
   },
   methods: {
-    refreshTodoList: function refreshTodoList() {
+    deleteThis: function deleteThis(id) {
       var _this = this;
 
-      console.log("refreshtodo called");
-      axios.get("/todoitems").then(function (response) {
-        return _this.data = response.data;
-      }, console.log("refreshtodolist called"))["catch"](console.log("something went wrong while refreshing todo items"));
+      axios({
+        method: "delete",
+        url: "/todoitems/" + id
+      }).then(function (response) {
+        _this.data = _this.data.filter(function (item) {
+          return item.id != id;
+        });
+      })["catch"](function (error) {
+        console.log("something went wrong with initial fetch", error);
+      });
     }
   },
   mounted: function mounted() {
     var _this2 = this;
 
-    //console.log("todo-list component mounted.");
     axios.get("/todoitems").then(function (response) {
-      return _this2.data = response.data;
-    }, console.log("successfully fetched todo item datas"))["catch"](console.log("something went wrong while fetching todo items"));
+      _this2.data = response.data;
+    })["catch"](function (error) {
+      console.log("something went wrong with initial fetch", error);
+    });
+  },
+  created: function created() {
+    var _this3 = this;
+
+    EventBus.$on("todoItemAdded", function (payload) {
+      _this3.data.unshift(payload);
+    });
+    this.$on("deleteIt", function () {
+      console.log("delete received");
+    });
   }
 });
 
@@ -3071,7 +3096,15 @@ var render = function() {
     _c("div", { staticClass: "message-header" }, [
       _c("p", [_vm._v(_vm._s(_vm.title))]),
       _vm._v(" "),
-      _c("button", { staticClass: "delete", attrs: { "aria-label": "delete" } })
+      _c("button", {
+        staticClass: "delete",
+        attrs: { "aria-label": "delete" },
+        on: {
+          click: function($event) {
+            return _vm.deleteIt(_vm.id)
+          }
+        }
+      })
     ]),
     _vm._v(" "),
     _c("div", { staticClass: "message-body" }, [
@@ -3107,8 +3140,12 @@ var render = function() {
     _vm._l(_vm.data, function(todoitem) {
       return _c("todoItem", {
         key: todoitem.id,
-        attrs: { title: todoitem.title, description: todoitem.description },
-        on: { todoItemAdded: _vm.refreshTodoList }
+        attrs: {
+          id: todoitem.id,
+          title: todoitem.title,
+          description: todoitem.description
+        },
+        on: { deleteIt: _vm.deleteThis }
       })
     }),
     1
@@ -15300,6 +15337,7 @@ webpackContext.id = "./resources/js sync recursive \\.vue$/";
 __webpack_require__(/*! ./bootstrap */ "./resources/js/bootstrap.js");
 
 window.Vue = __webpack_require__(/*! vue */ "./node_modules/vue/dist/vue.common.js");
+window.EventBus = new Vue({});
 
 var files = __webpack_require__("./resources/js sync recursive \\.vue$/");
 

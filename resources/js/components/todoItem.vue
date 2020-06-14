@@ -2,7 +2,7 @@
   <article class="message is-primary card">
     <div class="message-header">
       <p>{{title}}</p>
-      <button class="delete" aria-label="delete"></button>
+      <button v-on:click="deleteIt(id)" class="delete" aria-label="delete"></button>
     </div>
     <div class="message-body">{{description}}</div>
   </article>
@@ -13,12 +13,15 @@ export default {
   data() {
     return {};
   },
-  props: ["title", "description"],
+  props: ["id", "title", "description"],
 
-  methods: {},
+  methods: {
+    deleteIt: function(id) {
+      //console.log(id);
+      this.$emit("deleteIt", id);
+    }
+  },
 
-  mounted() {
-    //console.log("todo-list component mounted.");
-  }
+  mounted() {}
 };
 </script>
