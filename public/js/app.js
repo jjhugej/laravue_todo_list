@@ -2119,6 +2119,7 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
     return {
@@ -2211,11 +2212,21 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
     return {
       data: null
     };
+  },
+  computed: {
+    isEmpty: function isEmpty() {
+      if (this.data == null || this.data.length < 1) {
+        return true;
+      } else {
+        return false;
+      }
+    }
   },
   methods: {
     deleteThis: function deleteThis(id) {
@@ -2238,6 +2249,7 @@ __webpack_require__.r(__webpack_exports__);
 
     axios.get("/todoitems").then(function (response) {
       _this2.data = response.data;
+      console.log(_this2.data.length);
     })["catch"](function (error) {
       console.log("something went wrong with initial fetch", error);
     });
@@ -2246,10 +2258,7 @@ __webpack_require__.r(__webpack_exports__);
     var _this3 = this;
 
     EventBus.$on("todoItemAdded", function (payload) {
-      _this3.data.unshift(payload);
-    });
-    this.$on("deleteIt", function () {
-      console.log("delete received");
+      _this3.data.push(payload);
     });
   }
 });
@@ -2989,7 +2998,7 @@ var render = function() {
   return _c(
     "form",
     {
-      staticClass: "container pb-4",
+      staticClass: "container pb-4 box",
       on: {
         submit: function($event) {
           $event.preventDefault()
@@ -2997,9 +3006,13 @@ var render = function() {
       }
     },
     [
+      _c("h1", { staticClass: "title has-text-centered" }, [
+        _vm._v("Add new todo item")
+      ]),
+      _vm._v(" "),
       _c("div", { staticClass: "field" }, [
         _c("label", { staticClass: "label", attrs: { for: "title" } }, [
-          _vm._v("Title")
+          _vm._v("What do you need to do?")
         ]),
         _vm._v(" "),
         _c("div", { staticClass: "control" }, [
@@ -3029,7 +3042,7 @@ var render = function() {
       _vm._v(" "),
       _c("div", { staticClass: "field" }, [
         _c("label", { staticClass: "label", attrs: { for: "description" } }, [
-          _vm._v("Description")
+          _vm._v("Notes")
         ]),
         _vm._v(" "),
         _c("div", { staticClass: "control" }, [
@@ -3136,19 +3149,27 @@ var render = function() {
   var _c = _vm._self._c || _h
   return _c(
     "div",
-    { staticClass: "container" },
-    _vm._l(_vm.data, function(todoitem) {
-      return _c("todoItem", {
-        key: todoitem.id,
-        attrs: {
-          id: todoitem.id,
-          title: todoitem.title,
-          description: todoitem.description
-        },
-        on: { deleteIt: _vm.deleteThis }
+    { staticClass: "container box" },
+    [
+      _vm.isEmpty
+        ? _c("h1", { staticClass: "has-text-centered" }, [
+            _vm._v("What do you need to do?")
+          ])
+        : _vm._e(),
+      _vm._v(" "),
+      _vm._l(_vm.data, function(todoitem) {
+        return _c("todoItem", {
+          key: todoitem.id,
+          attrs: {
+            id: todoitem.id,
+            title: todoitem.title,
+            description: todoitem.description
+          },
+          on: { deleteIt: _vm.deleteThis }
+        })
       })
-    }),
-    1
+    ],
+    2
   )
 }
 var staticRenderFns = []

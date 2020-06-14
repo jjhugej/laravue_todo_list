@@ -1,5 +1,6 @@
 <template>
-  <div class="container">
+  <div class="container box">
+    <h1 class="has-text-centered" v-if="isEmpty">What do you need to do?</h1>
     <todoItem
       v-for="todoitem in data"
       v-on:deleteIt="deleteThis"
@@ -17,6 +18,15 @@ export default {
     return {
       data: null
     };
+  },
+  computed: {
+    isEmpty: function() {
+      if (this.data == null || this.data.length < 1) {
+        return true;
+      } else {
+        return false;
+      }
+    }
   },
   methods: {
     deleteThis: function(id) {
@@ -38,6 +48,7 @@ export default {
       .get("/todoitems")
       .then(response => {
         this.data = response.data;
+        console.log(this.data.length);
       })
       .catch(function(error) {
         console.log("something went wrong with initial fetch", error);
@@ -45,10 +56,7 @@ export default {
   },
   created() {
     EventBus.$on("todoItemAdded", payload => {
-      this.data.unshift(payload);
-    });
-    this.$on("deleteIt", function() {
-      console.log("delete received");
+      this.data.push(payload);
     });
   }
 };
